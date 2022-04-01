@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+    <section class="text-center content-section" id="about" style="background: url(&quot;static/assets/img/europarcs_verkoop_home.jpg&quot;), #ffffff;background-size: cover, auto;filter: blur(0px);">
+        <div class="container" style="background: rgba(0,0,0,0);">
+            <div class="row" style="filter: blur(0px);">
+                <div class="col-lg-8 mx-auto">
+                    <h3>Beste {{ user }},</h3>
+                    <p>Bij ons kunt u kiezen voor een bungelow die altijd geschikt is voor uw situatie.</p>
+                    <p>Zo hebben wij een breed aanbod aan bungalows voor ieder gezin. U kunt kiezen uit een bungelow van 2, 4, of 8 personen.</p>
+                    <p>Elke bungelow heeft een eigen badkamer, gratis ontbijt, Wi-Fi en toegang tot het zwembad.</p><a class="btn btn-link btn-circle" role="button" href="#download" style="border-color: rgb(255, 255, 255);"><i class="fa fa-angle-double-down animated"></i></a>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="text-center download-section content-section" id="download" style="background: rgb(188,168,168);">
+        <div class="container">
+            <div class="row product-list dev">
+                {% for x in range(bungalows) %}
+                <div class="col-sm-6 col-md-4 product-item animation-element slide-rotate-clockwise">
+                    <div class="product-container">
+                        <div class="row">
+                            <div class="col-md-12"><a class="product-image" href="#"><img src="{{bungalow_afbeelding[x]}}"></a></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-8">
+                                <h2><a href="#">{{bungalow_naam[x]}}</a></h2>
+                            </div>
+                            <div class="col-4"><a class="small-text" href="#">compare </a></div>
+                        </div>
+                        <div class="product-rating"><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star-half"></i><a class="small-text" href="#">82 reviews</a></div>
+                        <div class="row">
+                            <div class="col-12">
+                                <p class="product-description">{{bungalow_omschrijving[x]}}</p>
+                                <div class="row">
+                                    <div class="col-6">
+                                        <form method="POST" action="/boek" >
+                                            <button class="btn btn-light" type="submit" name="Boeking" value={{bungalow_id[x]}}>Vakantie inplannen!</button>
+                                        </form>
+                                    </div>
+                                    <div class="col-6">
+                                        <p class="product-price">{{bungalow_prijs[x]}} </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                </div> 
+            </div>  
+        </div>    
+    <footer>
+        <div class="container text-center">
+            <p>Copyright ©&nbsp;Zee en Duin 2022</p>
+        </div>
+    </footer>
+    <script src="static/assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="static/assets/js/grayscale.js"></script>
+    <script src="static/assets/js/Animated-Pretty-Product-List-v12.js"></script>
+    <script src="static/assets/js/Swiper-Slider-Card-For-Blog-Or-Product.js"></script>
+</body>
+
+</html>
+{% endblock %}

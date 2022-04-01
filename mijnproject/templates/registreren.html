@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<!DOCTYPE html>
+<html>
+<body>
+    <section class="login-dark">
+        <div class="form-container">
+            <form method="post">
+                <h2 class="text-center">Maak een account.</h2>
+                {{ form.hidden_tag() }}
+                <div class="mb-3">{{ form.hidden_tag() }}</div>
+                <div class="mb-3">{{ form.email() }}</div>
+                <div class="mb-3">{{ form.username() }}</div>
+                <div class="mb-3">{{ form.password() }}</div>
+                <div class="mb-3">{{ form.pass_confirm() }}</div>
+                {{ form.errors }}
+                <div class="form-check"><label class="form-check-label"><input class="form-check-input" type="checkbox">Ik ga akkoord met de gebruikersvoorwaarden.</label></div>
+                <div>{{ form.submit(class="btn btn-primary d-block w-100", type="submit", style="background: rgb(255,92,0);color: rgb(255,255,255);") }}</div>    
+            </div>
+            </form>
+        </div>
+    </section>
+    <footer>
+        <div class="container text-center">
+            <p>Copyright ©&nbsp;Zee en Duin 2022</p>
+        </div>
+    </footer>
+    <script src="static/assets/bootstrap/js/bootstrap.min.js"></script>
+    <script src="static/assets/js/grayscale.js"></script>
+    <script src="static/assets/js/Animated-Pretty-Product-List-v12.js"></script>
+    <script src="static/assets/js/Swiper-Slider-Card-For-Blog-Or-Product.js"></script>
+</body>
+
+</html>
+{% endblock %}
