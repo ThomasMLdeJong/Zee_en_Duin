@@ -158,22 +158,25 @@ def bedankt():
             
     return render_template('bedankt.html')
 
-@app.route('/mijn-boekingen')
+@app.route('/mijn-boekingen', methods=['POST', 'GET'])
 @login_required
 def mijnBoekingen():
-
     # Vraag id op van de gebruiker
     user = User.query.filter_by(username=current_user.username).all()[0]
     user_id = user.id
 
     # Zoek boekingen van deze gebruiker
     aantal = Boeking.query.filter_by(gast=user_id).all()
-
+    print(f'aantal = {aantal}')
     # Maak lege lijsten van alle tabellen die een boeking heeft
+    naam = []
     van = []
     tot = []
     bungalow_id = []
     prijs = []
+    afbeelding = []
+    omschrijving = []
+    boeking_id = []
 
     # Voor alle boekingen in de breedte van de boekingen en in de lengte van het aantal, append deze boeking aan de lijsten.
     for i in range(len(aantal)):
@@ -182,9 +185,30 @@ def mijnBoekingen():
         tot.append(x.tot)
         bungalow_id.append(x.bungalow)
         prijs.append(x.prijs)
+        boeking_id.append(x.id)
 
-    print(van, prijs, bungalow_id, tot)
-    return user.username
+        aantal_b = Bungalow.query.filter_by(id=x.id).all()
+        for j in range(len(aantal_b)):
+            y = Bungalow.query.filter_by(id=x.bungalow).all()[j]
+            naam.append(y.naam)
+            afbeelding.append(y.afbeelding)
+            omschrijving.append(y.beschrijving)
+
+
+
+    if request.method == 'POST':
+        if request.form["Annuleren"]:
+            annuleer_id = request.form["Annuleren"]
+            boeking = Boeking.query.get(annuleer_id)
+            db.session.delete(boeking)
+            db.session.commit()
+            return redirect(url_for('mijnBoekingen'))
+            
+
+
+    aantal_b = len(aantal)
+    print(f'de omschrijving is:{omschrijving}')
+    return render_template('mijn_boeking.html', boeking_id=boeking_id, prijs=prijs, aantal=aantal_b, naam=naam, afbeelding=afbeelding, omschrijving=omschrijving, van=van, tot=tot)
 
 @app.route('/favicon.ico')
 def favicon():

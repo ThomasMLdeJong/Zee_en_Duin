@@ -1,0 +1,50 @@
+{% extends "base.html" %} {% block content %}
+    <section class="text-center content-section" id="about" style="background: url(&quot;assets/img/europarcs_verkoop_home.jpg&quot;), #ffffff;background-size: cover, auto;filter: blur(0px);height: 342.15px;">
+        <div class="container" style="background: rgba(0,0,0,0);">
+            <div class="row" style="filter: blur(0px);">
+                <div class="col-lg-8 mx-auto">
+                    <h2>Uw boekingen</h2>
+                </div>
+            </div>
+        </div>
+    </section>
+    <section class="text-center download-section content-section" id="download" style="background: rgb(188,168,168);">
+        <div class="container">
+            <div class="row product-list dev">
+                {% for x in range(aantal) %}
+                <div class="col-sm-6 col-md-4 product-item animation-element slide-rotate-clockwise">
+                    <div class="product-container">
+                        <div class="row">
+                            <div class="col-md-12"><a class="product-image" href="#"><img src="{{afbeelding[x]}}"></a></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <h2><a href="#">{{naam[x]}}</a> <p class="product-description">van: {{van[x]}} <br> t/m: {{tot[x]}}</p> </h2>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="row">
+            
+                                    <div class="col-6"><form method="POST" action="/mijn-boekingen"><button name="Annuleren" class="btn btn-light" type="submit" value="{{boeking_id[x]}}" style="background: var(--bs-red);">Annuleren</button></form><button class="btn btn-light" type="button" style="background: var(--bs-red);margin-top: 10px;">Wijzig datum</button></div>
+                                    <div class="col-6">
+                                        <p class="product-price">Prijs: {{prijs[x]}} </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+    <footer>
+        <div class="container text-center">
+            <p>Copyright Â©&nbsp;Zee en Duin 2022</p>
+        </div>
+    </footer>
+</body>
+
+</html>
+{% endblock %}

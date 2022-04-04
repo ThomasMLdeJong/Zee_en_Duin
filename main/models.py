@@ -1,11 +1,10 @@
-from sqlalchemy import ForeignKey
+from sqlalchemy import ForeignKey, delete 
 from sqlalchemy. orm import relationship
 from calendar import week
 from operator import index
 from main import db, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
-
 
 # De user_loader decorator zorgt voor de flask-login voor de huidige gebruiker
 # en haalt zijn/haar id op.
