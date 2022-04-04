@@ -2,7 +2,7 @@ from sqlalchemy import ForeignKey
 from sqlalchemy. orm import relationship
 from calendar import week
 from operator import index
-from mijnproject import db, login_manager
+from main import db, login_manager
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import UserMixin
 
@@ -65,14 +65,15 @@ class Boeking(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     gast = db.Column(db.Integer, ForeignKey(User.id))
     bungalow = db.Column(db.Integer, ForeignKey(Bungalow.id))
-    weeknummer = db.Column(db.Integer)
+    van = db.Column(db.Date)
+    tot = db.Column(db.Date)
     prijs = db.Column(db.Integer)
 
-    def __init__(self, id, gast, bungalow, weeknummer, prijs):
-        self.id = id
+    def __init__(self, gast, bungalow, van, tot, prijs):
         self.gast = gast
         self.bungalow = bungalow
-        self.weeknummer = weeknummer
+        self.van = van
+        self.tot = tot
         self.prijs = prijs
 
 db.create_all()

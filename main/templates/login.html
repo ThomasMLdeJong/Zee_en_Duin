@@ -1,0 +1,25 @@
+{% extends "base.html" %} {% block content %}
+
+<head>
+    <title>Login - Zee en Duin</title>
+</head>
+{% if current_user.is_authenticated %}
+<meta http-equiv="refresh" content="0; URL=/aanbod" /> {% else %}
+<section class="login-dark" style="background: url(&quot;static/assets/img/sean-oulashin-KMn4VEeEPR8-unsplash.jpg&quot;);">
+    <form method="post" style="background: rgb(255,255,255);">
+        <div class="illustration"><i class="icon ion-ios-locked-outline" style="color: rgb(255,92,0);"></i></div>
+        {{ form.errors }} {{ form.hidden_tag() }}
+        <div>{{ form.email(class_="mb-3") }}</div>
+        <div>{{ form.password(class_="mb-3") }}</div>
+        <div>{{ form.submit(class="btn btn-primary d-block w-100", type="submit", style="background: rgb(255,92,0);color: rgb(255,255,255);") }}</div><a class="forgot" href="#">Wachtwoord vergeten?</a><a class="navbar-brand" href="index.html" style="color: rgb(255,255,255);">Zee en Duin</a>
+    </form>
+</section>
+<footer>
+    <div class="container text-center">
+        <p>Copyright ©&nbsp;Zee en Duin 2022</p>
+    </div>
+</footer>
+</body>
+
+</html>
+{% endif %} {% endblock %}

@@ -1,0 +1,37 @@
+{% extends "base.html" %} {% block content %}
+
+<head>
+    <title>Boeken - Zee en Duin</title>
+</head>
+
+<section class="register-photo">
+    <div class="form-container" style="width: 977px;margin-top: 100px">
+        <div class="image-holder" style="background: url({{bungalow_afbeelding}}) center;width: 472px;">
+            <h1 class="text-center brand-heading"> {{bungalow_naam}} </h1>
+        </div>
+        <form method="post" action="/bedankt">
+            <h2 class="text-center">Boeken.</h2>
+            <div class="mb-3"></div>
+            <div class="mb-3"></div>
+            <div class="mb-3"></div>
+            <div class="row" style="padding: 6px;margin-bottom: 17px;width: 388px;">
+                <div>
+                    <input type="date" id="start" name="boeking-start" value="2022/04/12" min="2022/01/01" max="2025/12/31">
+                </div>
+            </div>
+            <p><strong>t/m datum&nbsp; = boekingsdatum + 7 dagen &nbsp;</strong></p>
+            <p class="text-dark">{{bungalow_prijs}}</p>
+            <div class="mb-3">
+                <button name="Bevestigen" class="btn btn-primary d-block w-100" type="submit" value="{{boeken}}" style="background: rgb(255,92,0);color: rgb(255,255,255);">boek nu</button></div>
+        </form>
+    </div>
+</section>
+<footer>
+    <div class="container text-center">
+        <p>Copyright ©&nbsp;Zee en Duin 2022</p>
+    </div>
+</footer>
+</body>
+
+</html>
+{% endblock %}
