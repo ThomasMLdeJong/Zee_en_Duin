@@ -79,23 +79,25 @@ def login():
 
         # Check that the user was supplied and the password is right
         # The verify_password method comes from the User object
+        if user != None:
+            if user.check_password(form.password.data) and user is not None:
+                # Log in the user
 
-        if user.check_password(form.password.data) and user is not None:
-            # Log in the user
+                login_user(user)
+                flash('Succesvol ingelogd!.')
 
-            login_user(user)
-            flash('Succesvol ingelogd!.')
+                # If a user was trying to visit a page that requires a login
+                # flask saves that URL as 'next'.
+                next = request.args.get('next')
 
-            # If a user was trying to visit a page that requires a login
-            # flask saves that URL as 'next'.
-            next = request.args.get('next')
+                # So let's now check if that next exists, otherwise we'll go to
+                # the aanbod page.
+                if next == None or not next[0] == '/':
+                    next = url_for('home')
 
-            # So let's now check if that next exists, otherwise we'll go to
-            # the aanbod page.
-            if next == None or not next[0] == '/':
-                next = url_for('home')
-
-            return redirect(next)
+                return redirect(next)
+        else:
+            flash("Gebruiker bestaat niet!")
     return render_template('login.html', form=form)
 
 
@@ -158,7 +160,16 @@ def bedankt():
                         beschikbare_datum = False
                 id = data[0]
                 print(f'boeking_id = {boeking_id}')
-                print(f'boeking_van = {boeking_van}')          
+                print(f'boeking_van = {boeking_van}') 
+                bungalow = Bungalow.query.get(id)
+                bungalow_afbeelding = bungalow.afbeelding
+                bungalow_naam = bungalow.naam
+                bungalow_omschrijving = bungalow.beschrijving
+                bungalow_type = bungalow.type
+                type = Type.query.get(bungalow_type)
+                bungalow_prijs = type.weekprijs
+                boeken =f"{id} {bungalow_prijs}"        
+
                 if beschikbare_datum: 
                     id = data[0]
                     prijs = data[1]
@@ -171,7 +182,7 @@ def bedankt():
                             tot=tot_datum)
                     db.session.add(boeking)
                     db.session.commit()
-
+    
             else:
                 return redirect(url_for('aanbod')), flash('Error, je bent de datum vergeten in te vullen')
     if beschikbare_datum==True:     
@@ -179,7 +190,9 @@ def bedankt():
         return render_template('bedankt.html')
     else:
         print(False)
-        return render_template('boek.html', id=data[0id = data[0]]), flash(f'de datum {vanaf_datum} is al gereserveerd')
+        return render_template('boek.html', bungalow_afbeelding=bungalow_afbeelding,
+                                bungalow_naam=bungalow_naam, bungalow_omschrijving=bungalow_omschrijving,
+                                bungalow_prijs=bungalow_prijs, boeken=boeken,id = data[0])
 
 @app.route('/mijn-boekingen', methods=['POST', 'GET'])
 @login_required
