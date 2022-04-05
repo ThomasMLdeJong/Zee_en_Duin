@@ -132,31 +132,54 @@ def bedankt():
             vanaf_datum = request.form["boeking-start"]
 
             if vanaf_datum != '':
+                beschikbare_datum = True
                 date_time_obj = datetime.strptime(vanaf_datum, '%Y-%m-%d')
                 vanaf_datum = date_time_obj.date()
                 tot_datum = vanaf_datum + timedelta(days=7)
-
                 def Convert(string):
                     """ Convert neemt een string als parameter en split deze string bij elke spatie.
                         Vervolgens wordt hier een lijst van gemaakt."""
                     li = list(string.split(" "))
                     return li
-
-                data = Convert(request.form["Bevestigen"])
-                id = data[0]
-                prijs = data[1]
                 
-                boeking = Boeking(gast=current_user.get_id(),
-                        bungalow=id,
-                        prijs=prijs,
-                        van=vanaf_datum,
-                        tot=tot_datum)
-                db.session.add(boeking)
-                db.session.commit()
+                data = Convert(request.form["Bevestigen"])
+                boeking = Boeking.query.filter_by(bungalow=data[0]).all()
+                #Hoeveel boekingen er al zijn in de database voor dezelfde bungalow
+                print(f'boeking = {boeking}')
+                
+                #Filteren op id's van boekingen op dezelfde bungalow
+                boeking_id = []
+                boeking_van = []
+                for x in range(len(boeking)):
+                    boeking_date_object = boeking[x].van
+                    boeking_id.append(boeking[x].id)
+                    print(boeking_date_object)
+                    if boeking_date_object == vanaf_datum:
+                        beschikbare_datum = False
+                id = data[0]
+                print(f'boeking_id = {boeking_id}')
+                print(f'boeking_van = {boeking_van}')          
+                if beschikbare_datum: 
+                    id = data[0]
+                    prijs = data[1]
+
+                    
+                    boeking = Boeking(gast=current_user.get_id(),
+                            bungalow=id,
+                            prijs=prijs,
+                            van=vanaf_datum,
+                            tot=tot_datum)
+                    db.session.add(boeking)
+                    db.session.commit()
+
             else:
                 return redirect(url_for('aanbod')), flash('Error, je bent de datum vergeten in te vullen')
-            
-    return render_template('bedankt.html')
+    if beschikbare_datum==True:     
+        print(True)   
+        return render_template('bedankt.html')
+    else:
+        print(False)
+        return render_template('boek.html', id=data[0id = data[0]]), flash(f'de datum {vanaf_datum} is al gereserveerd')
 
 @app.route('/mijn-boekingen', methods=['POST', 'GET'])
 @login_required
@@ -207,7 +230,6 @@ def mijnBoekingen():
 
 
     aantal_b = len(aantal)
-    print(f'de omschrijving is:{omschrijving}')
     return render_template('mijn_boeking.html', boeking_id=boeking_id, prijs=prijs, aantal=aantal_b, naam=naam, afbeelding=afbeelding, omschrijving=omschrijving, van=van, tot=tot)
 
 @app.route('/favicon.ico')
