@@ -17,6 +17,7 @@ def home():
     bungalow_prijs = []
     bungalow_naam = []
     bungalow_id = []
+    bungalow_personen = []
     for x in range(3):
         random_n = random.randrange(1, rows)
         bungalow = Bungalow.query.get(random_n)
@@ -27,7 +28,8 @@ def home():
         bungalow_type = bungalow.type
         type = Type.query.get(bungalow_type)
         bungalow_prijs.append(type.weekprijs)
-    return render_template('index.html', bungalow_id=bungalow_id, bungalow_afbeelding=bungalow_afbeelding, bungalow_naam=bungalow_naam, bungalow_omschrijving=bungalow_omschrijving, bungalow_prijs=bungalow_prijs)
+        bungalow_personen.append(type.a_personen)
+    return render_template('index.html', bungalow_id=bungalow_id, bungalow_afbeelding=bungalow_afbeelding, bungalow_naam=bungalow_naam, bungalow_omschrijving=bungalow_omschrijving, bungalow_prijs=bungalow_prijs, aantal=bungalow_personen)
 
 
 @app.route('/aanbod')
@@ -39,6 +41,7 @@ def aanbod():
     bungalow_prijs = []
     bungalow_naam = []
     bungalow_id = []
+    bungalow_personen = []
     for x in range(1, rows+1):
         user = current_user.username
         bungalow = Bungalow.query.get(x)
@@ -49,9 +52,10 @@ def aanbod():
         bungalow_type = bungalow.type
         type = Type.query.get(bungalow_type)
         bungalow_prijs.append(type.weekprijs)
+        bungalow_personen.append(type.a_personen)
     return render_template('aanbod.html', user=user, bungalow_naam=bungalow_naam, bungalow_prijs=bungalow_prijs, 
                             bungalow_omschrijving=bungalow_omschrijving, bungalow_afbeelding=bungalow_afbeelding, 
-                            bungalows=rows, bungalow_id=bungalow_id)
+                            bungalows=rows, bungalow_id=bungalow_id, aantal=bungalow_personen)
         
 @app.route('/boek', methods=['GET', 'POST'])
 @login_required
