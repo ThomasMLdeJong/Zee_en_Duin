@@ -29,7 +29,14 @@
                             <div class="col-12">
                                 <div class="row">
             
-                                    <div class="col-6"><form method="POST" action="/mijn-boekingen"><button name="Annuleren" class="btn btn-light" type="submit" value="{{boeking_id[x]}}" style="background: var(--bs-red);">Annuleren</button></form><button class="btn btn-light" type="button" style="background: var(--bs-red);margin-top: 10px;">Wijzig datum</button></div>
+                                    <div class="col-6">
+                                        <form method="POST" action="/mijn-boekingen">
+                                            <button name="Annuleren" class="btn btn-light" type="submit" value="{{boeking_id[x]}}" style="background: var(--bs-red);">Annuleren</button>
+                                        </form>
+
+                                        <form method="GET" action="/verlengen">
+                                            <button class="btn btn-light" type="submit" name="Verlengen" value="{{boeking_id[x]}}" style="background: var(--bs-red);margin-top: 10px;">Verlengen</button></div>
+                                        </form>
                                     <div class="col-6">
                                         <p class="product-price">Prijs: {{prijs[x]}} </p>
                                     </div>

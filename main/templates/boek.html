@@ -9,6 +9,7 @@
         <div class="image-holder" style="background: url({{bungalow_afbeelding}}) center;width: 472px; background-size: cover;">
             <h1 class="text-center brand-heading"> {{bungalow_naam}} </h1>
         </div>
+        {% if verlengen == False %}
         <form method="post" action="/boek">
             <h2 class="text-center">Boeken.</h2>
             <div class="mb-3"></div>
@@ -24,6 +25,28 @@
             <div class="mb-3">
                 <button name="Bevestigen" class="btn btn-primary d-block w-100" type="submit" value="{{bungalow}}" style="background: rgb(255,92,0);color: rgb(255,255,255);">boek nu</button></div>
         </form>
+        {% else %}
+        <form method="post" action="/boek">
+            <h2 class="text-center">Boeken.</h2>
+            <div class="mb-3"></div>
+            <div class="mb-3"></div>
+            <div class="mb-3"></div>
+            <div class="text-">
+                <label>Aantal weken:</label>
+            <select name="weken" id="weken">
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+              </select>
+              <hr class="solid">
+            </div>
+              <div class="col-12">
+                <h2><p class="product-description">Huidige prijs: {{huidige_prijs}} <br> Nieuwe prijs: = {{huidige_prijs}} + ({{bungalow_prijs}} * aantal weken)</p> </h2>
+            </div>
+            <div class="mb-3">
+                <button name="Verlenging" class="btn btn-primary d-block w-100" type="submit" value="{{boeking}}" style="background: rgb(255,92,0);color: rgb(255,255,255);">Verlengen</button></div>
+        </form>
+        {%endif%}
     </div>
 </section>
 <footer>
