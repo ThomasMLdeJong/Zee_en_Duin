@@ -73,7 +73,15 @@ def boek():
                 vanaf_datum = date_time_obj.date()
                 # tot_datum
                 tot_datum = vanaf_datum + timedelta(days=7)
-                
+                # datum_vandaag
+                datum_vandaag = datetime.date(datetime.now())
+                # als de datum die je wilt boeken terug in de tijd of vandaag is
+                if vanaf_datum < datum_vandaag:
+                    bungalow = request.form['Bevestigen']
+                    return redirect(url_for('boek', bungalow=bungalow)), flash(f'De datum {vanaf_datum} is al geweest!')
+                if vanaf_datum == datum_vandaag:
+                    bungalow = request.form['Bevestigen']
+                    return redirect(url_for('boek', bungalow=bungalow)), flash(f'De datum {vanaf_datum} is vandaag!')
                 # Vraag bungalow_id op uit POST bericht
                 geboekte_bungalow_id = int(request.form['Bevestigen'])
 
