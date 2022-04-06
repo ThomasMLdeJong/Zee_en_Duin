@@ -57,6 +57,9 @@ class Bungalow(db.Model):
         self.type = type 
         self.beschrijving = beschrijving
         self.afbeelding = afbeelding
+    
+    def __repr__(self):
+        return f"<Bungalow {self.id}>"
 
 class Boeking(db.Model):
     __tablename__ = 'Boekingen'

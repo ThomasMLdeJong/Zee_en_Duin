@@ -20,88 +20,38 @@
 </header>
 <section class="text-center content-section" id="about" style="background: #e7dddd;">
     <div class="container">
-        
-        <div class="row product-list dev" style="margin-top: -260px;">
-            <div class="col-sm-6 col-md-4 product-item animation-element slide-top-left">
-                <div class="product-container">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <a class="product-image" href="#"><img src="static/assets/img/iphone6.jpg"></a>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-8">
-                            <h2><a href="#">iPhone 6s</a></h2>
-                        </div>
-                        <div class="col-4"><a class="small-text" href="#">compare </a></div>
-                    </div>
-                    <div class="product-rating"><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star-half"></i><a class="small-text" href="#">82 reviews</a></div>
-                    <div class="row">
-                        <div class="col-12">
-                            <p class="product-description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam ornare sem sed nisl dignissim, facilisis dapibus lacus vulputate. Sed lacinia lacinia magna. </p>
-                            <div class="row">
-                                <div class="col-6"><button class="btn btn-light" type="button">Buy Now!</button></div>
-                                <div class="col-6">
-                                    <p class="product-price">$599.00 </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        <div class="row product-list dev" style="margin-top: -350px;">
+            {% for i in range(3) %}
             <div class="col-sm-6 col-md-4 product-item animation-element slide-rotate-clockwise">
                 <div class="product-container">
                     <div class="row">
                         <div class="col-md-12">
-                            <a class="product-image" href="#"><img src="static/assets/img/iphone6.jpg"></a>
+                            <a class="product-image" href="#"><img src="{{bungalow_afbeelding[i]}}"></a>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-8">
-                            <h2><a href="#">iPhone 6s</a></h2>
+                            <h2><a href="#">{{bungalow_naam[i]}}</a></h2>
                         </div>
                         <div class="col-4"><a class="small-text" href="#">compare </a></div>
                     </div>
                     <div class="product-rating"><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star-half"></i><a class="small-text" href="#">82 reviews</a></div>
                     <div class="row">
                         <div class="col-12">
-                            <p class="product-description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam ornare sem sed nisl dignissim, facilisis dapibus lacus vulputate. Sed lacinia lacinia magna. </p>
+                            <p class="product-description">{{bungalow_omschrijving[i]}}</p>
+                            <form method="GET" action="boek">
                             <div class="row">
-                                <div class="col-6"><button class="btn btn-light" type="button">Buy Now!</button></div>
+                                <div class="col-6"><button class="btn btn-light" name="bungalow" value="{{bungalow_id[i]}}" type="submit">Boek nu!</button></div>
                                 <div class="col-6">
-                                    <p class="product-price">$599.00 </p>
+                                    <p class="product-price">{{bungalow_prijs[i]}}</p>
                                 </div>
                             </div>
+                            </form>
                         </div>
                     </div>
                 </div>
             </div>
-            <div class="col-sm-6 col-md-4 product-item animation-element slide-top-right">
-                <div class="product-container">
-                    <div class="row">
-                        <div class="col-md-12">
-                            <a class="product-image" href="#"><img src="static/assets/img/iphone6.jpg"></a>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-8">
-                            <h2><a href="#">iPhone 6s</a></h2>
-                        </div>
-                        <div class="col-4"><a class="small-text" href="#">compare </a></div>
-                    </div>
-                    <div class="product-rating"><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star"></i><i class="fa fa-star-half"></i><a class="small-text" href="#">82 reviews</a></div>
-                    <div class="row">
-                        <div class="col-12">
-                            <p class="product-description">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam ornare sem sed nisl dignissim, facilisis dapibus lacus vulputate. Sed lacinia lacinia magna. </p>
-                            <div class="row">
-                                <div class="col-6"><button class="btn btn-light" type="button">Buy Now!</button></div>
-                                <div class="col-6">
-                                    <p class="product-price">$599.00 </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            {% endfor %}
             </div>
         </div>
     </div>

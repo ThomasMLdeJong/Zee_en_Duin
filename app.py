@@ -6,11 +6,28 @@ from main.forms import LoginForm, RegistrationForm
 from datetime import datetime, timedelta
 import os
 from sqlalchemy.exc import IntegrityError
+import random
 
 
 @app.route('/')
 def home():
-    return render_template('index.html')
+    rows = Bungalow.query.count()
+    bungalow_omschrijving = []
+    bungalow_afbeelding = []
+    bungalow_prijs = []
+    bungalow_naam = []
+    bungalow_id = []
+    for x in range(3):
+        random_n = random.randrange(1, rows)
+        bungalow = Bungalow.query.get(random_n)
+        bungalow_id.append(bungalow.id)
+        bungalow_naam.append(bungalow.naam)
+        bungalow_omschrijving.append(bungalow.beschrijving)
+        bungalow_afbeelding.append(bungalow.afbeelding)
+        bungalow_type = bungalow.type
+        type = Type.query.get(bungalow_type)
+        bungalow_prijs.append(type.weekprijs)
+    return render_template('index.html', bungalow_id=bungalow_id, bungalow_afbeelding=bungalow_afbeelding, bungalow_naam=bungalow_naam, bungalow_omschrijving=bungalow_omschrijving, bungalow_prijs=bungalow_prijs)
 
 
 @app.route('/aanbod')
@@ -36,63 +53,116 @@ def aanbod():
                             bungalow_omschrijving=bungalow_omschrijving, bungalow_afbeelding=bungalow_afbeelding, 
                             bungalows=rows, bungalow_id=bungalow_id)
         
-@app.route('/boek', methods=['POST'])
+@app.route('/boek', methods=['GET', 'POST'])
 @login_required
 def boek():
-    if request.method == 'POST':
-        if request.form["Boeking"]:
-            id = request.form["Boeking"]
-            bungalow = Bungalow.query.get(id)
-            bungalow_afbeelding = bungalow.afbeelding
-            bungalow_naam = bungalow.naam
-            bungalow_omschrijving = bungalow.beschrijving
-            bungalow_type = bungalow.type
-            type = Type.query.get(bungalow_type)
-            bungalow_prijs = type.weekprijs
-            boeken = f"{id} {bungalow_prijs}"
-            return render_template('boek.html', bungalow_afbeelding=bungalow_afbeelding,
-                                bungalow_naam=bungalow_naam, bungalow_omschrijving=bungalow_omschrijving,
-                                bungalow_prijs=bungalow_prijs, boeken=boeken)
-    form = "boekform?"
+    # Check of de request methode POST is
+    if request.method == "POST":
+        # Check of request.form bevestigen is
+        if "Bevestigen" in request.form:
+            # Selecteer vanaf_datum
+            vanaf_datum = request.form["boeking-start"]
 
-    if form.validate_on_submit():
-        flash('Dank voor de boeking! ')
-        return redirect(url_for('/aanbod'))
-    return render_template('boek.html', form=form)
+            # Controleer of vanaf_datum niet leeg is.
+            if vanaf_datum != '':
+                beschikbare_reservatie = True
+
+                # Strip vanaf_datum
+                date_time_obj = datetime.strptime(vanaf_datum, '%Y-%m-%d')
+                # Krijg alleen de datum van ons tijd_object
+                vanaf_datum = date_time_obj.date()
+                # tot_datum
+                tot_datum = vanaf_datum + timedelta(days=7)
+                
+                # Vraag bungalow_id op uit POST bericht
+                geboekte_bungalow_id = int(request.form['Bevestigen'])
+
+                # vraag alle boekingen op met dezelfde bungalow
+                boeking = Boeking.query.filter_by(bungalow=geboekte_bungalow_id).all()
+                reservatie_data = [] 
+                for y in range(0,8):
+                    reservatie_data.append(vanaf_datum + timedelta(days=y))
+
+                # Creeër lege lijst voor boeking_id's
+                boeking_id = []
+                gereserveerde_data = []
+                # Filteren op id's van boekingen op dezelfde bungalow
+                for x in range(len(boeking)):
+                    boeking_date_object = boeking[x].van
+                    for z in range(0,8):
+                        gereserveerde_data.append(boeking_date_object+timedelta(days=z))
+                    for p in reservatie_data:
+                        if p in gereserveerde_data:
+                            beschikbare_reservatie = False
+                    boeking_id.append(boeking[x].id)
+
+
+                # Als beschikbare_datum True is, dan gaan we de boeking maken.
+                if beschikbare_reservatie:
+                    bungalow = Bungalow.query.filter_by(id=geboekte_bungalow_id).first()
+                    type = bungalow.type
+                    id = bungalow.id
+                    prijs_object = Type.query.filter_by(id=type).first()
+                    prijs = prijs_object.weekprijs
+                    boeking = Boeking(gast=current_user.get_id(),
+                            bungalow=id,
+                            prijs=prijs,
+                            van=vanaf_datum,
+                            tot=tot_datum)
+                    db.session.add(boeking)
+                    db.session.commit()
+                    return render_template('bedankt.html')
+                else:
+                    # Datum niet beschikbaar, GET request naar /boek met bungalow id + flash bericht
+                    bungalow = request.form['Bevestigen']
+                    return redirect(url_for('boek', bungalow=bungalow)), flash(f"Datum {request.form['boeking-start']} is al geboekt!")
+            else:
+                # Datum vergeten in te vullen, GET request naar /boek met bungalow id + flash bericht
+                bungalow = request.form['Bevestigen']
+                return redirect(url_for('boek', bungalow=bungalow)), flash("Je bent vergeten een datum in te vullen!")
+    else:
+        # GET request, vraag bungalow informatie op van database.
+        id = request.args.get("bungalow")
+        bungalow = Bungalow.query.get(id)
+        bungalow_id = bungalow.id
+        bungalow_afbeelding = bungalow.afbeelding
+        bungalow_naam = bungalow.naam
+        bungalow_omschrijving = bungalow.beschrijving
+        bungalow_type = bungalow.type
+        return render_template("boek.html", bungalow=bungalow_id, bungalow_afbeelding=bungalow_afbeelding, bungalow_naam=bungalow_naam, 
+                                    bungalow_omschrijving=bungalow_omschrijving, bungalow_type=bungalow_type)
+
 
 @app.route('/logout')
 @login_required
 def logout():
-    # Logout the user
+    # Log onze gast uit
     logout_user()
 
     flash('Je bent nu uitgelogd!', 'info')
-    return redirect(url_for('aanbod'))
+    return redirect(url_for('/'))
 
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
-        # Grab the user from our User Models table
+        # Verkrijg gast van User model
         user = User.query.filter_by(email=form.email.data).first()
 
-        # Check that the user was supplied and the password is right
-        # The verify_password method comes from the User object
         if user != None:
-            if user.check_password(form.password.data) and user is not None:
-                # Log in the user
-
+            # Check of gegeven wachtwoord overeen komt met onze gast.
+            if user.check_password(form.password.data):
+                # Log onze gast in
                 login_user(user)
                 flash('Succesvol ingelogd!.')
 
-                # If a user was trying to visit a page that requires a login
-                # flask saves that URL as 'next'.
+                # Als een gebruiker een pagina wilt bekijken die login required is,
+                # flask slaat de URL op als 'next'.
                 next = request.args.get('next')
 
-                # So let's now check if that next exists, otherwise we'll go to
-                # the aanbod page.
-                if next == None or not next[0] == '/':
+                # Check of die url bestaat, ga anders naar de home pagina
+                if next == None or not next[0] == 'home':
                     next = url_for('home')
 
                 return redirect(next)
@@ -127,72 +197,10 @@ def register():
 
     return render_template('registreren.html', form=form)
 
-@app.route('/bedankt', methods=["POST"])
+@app.route('/bedankt')
+@login_required
 def bedankt():
-    if request.method == "POST":
-        if "Bevestigen" in request.form:
-            vanaf_datum = request.form["boeking-start"]
-
-            if vanaf_datum != '':
-                beschikbare_datum = True
-                date_time_obj = datetime.strptime(vanaf_datum, '%Y-%m-%d')
-                vanaf_datum = date_time_obj.date()
-                tot_datum = vanaf_datum + timedelta(days=7)
-                def Convert(string):
-                    """ Convert neemt een string als parameter en split deze string bij elke spatie.
-                        Vervolgens wordt hier een lijst van gemaakt."""
-                    li = list(string.split(" "))
-                    return li
-                
-                data = Convert(request.form["Bevestigen"])
-                boeking = Boeking.query.filter_by(bungalow=data[0]).all()
-                #Hoeveel boekingen er al zijn in de database voor dezelfde bungalow
-                print(f'boeking = {boeking}')
-                
-                #Filteren op id's van boekingen op dezelfde bungalow
-                boeking_id = []
-                boeking_van = []
-                for x in range(len(boeking)):
-                    boeking_date_object = boeking[x].van
-                    boeking_id.append(boeking[x].id)
-                    print(boeking_date_object)
-                    if boeking_date_object == vanaf_datum:
-                        beschikbare_datum = False
-                id = data[0]
-                print(f'boeking_id = {boeking_id}')
-                print(f'boeking_van = {boeking_van}') 
-                bungalow = Bungalow.query.get(id)
-                bungalow_afbeelding = bungalow.afbeelding
-                bungalow_naam = bungalow.naam
-                bungalow_omschrijving = bungalow.beschrijving
-                bungalow_type = bungalow.type
-                type = Type.query.get(bungalow_type)
-                bungalow_prijs = type.weekprijs
-                boeken =f"{id} {bungalow_prijs}"        
-
-                if beschikbare_datum: 
-                    id = data[0]
-                    prijs = data[1]
-
-                    
-                    boeking = Boeking(gast=current_user.get_id(),
-                            bungalow=id,
-                            prijs=prijs,
-                            van=vanaf_datum,
-                            tot=tot_datum)
-                    db.session.add(boeking)
-                    db.session.commit()
-    
-            else:
-                return redirect(url_for('aanbod')), flash('Error, je bent de datum vergeten in te vullen')
-    if beschikbare_datum==True:     
-        print(True)   
         return render_template('bedankt.html')
-    else:
-        print(False)
-        return render_template('boek.html', bungalow_afbeelding=bungalow_afbeelding,
-                                bungalow_naam=bungalow_naam, bungalow_omschrijving=bungalow_omschrijving,
-                                bungalow_prijs=bungalow_prijs, boeken=boeken,id = data[0])
 
 @app.route('/mijn-boekingen', methods=['POST', 'GET'])
 @login_required
@@ -230,20 +238,26 @@ def mijnBoekingen():
             afbeelding.append(y.afbeelding)
             omschrijving.append(y.beschrijving)
 
-
-
     if request.method == 'POST':
         if request.form["Annuleren"]:
             annuleer_id = request.form["Annuleren"]
-            boeking = Boeking.query.get(annuleer_id)
-            db.session.delete(boeking)
-            db.session.commit()
-            return redirect(url_for('mijnBoekingen'))
+
+            if int(annuleer_id) not in boeking_id:
+                flash("Dat is niet jouw boeking")
+            else:
+                boeking = Boeking.query.get(annuleer_id)
+                db.session.delete(boeking)
+                db.session.commit()
+                return redirect(url_for('mijnBoekingen'))
             
-
-
     aantal_b = len(aantal)
-    return render_template('mijn_boeking.html', boeking_id=boeking_id, prijs=prijs, aantal=aantal_b, naam=naam, afbeelding=afbeelding, omschrijving=omschrijving, van=van, tot=tot)
+
+    if aantal_b == 0:
+        nul_boekingen = True
+    else:
+        nul_boekingen = False
+
+    return render_template('mijn_boeking.html', nul_boekingen=nul_boekingen, boeking_id=boeking_id, prijs=prijs, aantal=aantal_b, naam=naam, afbeelding=afbeelding, omschrijving=omschrijving, van=van, tot=tot)
 
 @app.route('/favicon.ico')
 def favicon():

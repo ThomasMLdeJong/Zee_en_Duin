@@ -1,5 +1,5 @@
 {% extends "base.html" %} {% block content %}
-    <section class="text-center content-section" id="about" style="background: url(&quot;assets/img/europarcs_verkoop_home.jpg&quot;), #ffffff;background-size: cover, auto;filter: blur(0px);height: 342.15px;">
+    <section class="text-center content-section" id="about" style="background: url(&quot;static/assets/img/header_vakantiepark.jpg&quot;), #ffffff;background-size: cover ;filter: blur(0px);height: 100px;">
         <div class="container" style="background: rgba(0,0,0,0);">
             <div class="row" style="filter: blur(0px);">
                 <div class="col-lg-8 mx-auto">
@@ -11,6 +11,9 @@
     <section class="text-center download-section content-section" id="download" style="background: rgb(188,168,168);">
         <div class="container">
             <div class="row product-list dev">
+                {% if nul_boekingen == True %}
+                <h2>Je hebt nog geen boekingen...</p> </h2>
+                {% else %}
                 {% for x in range(aantal) %}
                 <div class="col-sm-6 col-md-4 product-item animation-element slide-rotate-clockwise">
                     <div class="product-container">
@@ -36,12 +39,13 @@
                     </div>
                 </div>
                 {% endfor %}
+                {% endif %}
             </div>
         </div>
     </section>
     <footer>
         <div class="container text-center">
-            <p>Copyright Â©&nbsp;Zee en Duin 2022</p>
+            <p>Copyright ©&nbsp;Zee en Duin 2022</p>
         </div>
     </footer>
 </body>
